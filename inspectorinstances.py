@@ -24,16 +24,18 @@ for region in regions:
 		x = region['RegionName']
 		client = boto3.client('inspector', region_name=x)
 		
+		# Try getting a list of assessment runs from the region
 		runs = client.list_assessment_runs()
 	except EndpointConnectionError as e:
 		print('Error: %s, this region may not currently be supported by Inspector.\n' % (e))
 		continue
-
+	
 	runs = runs['assessmentRunArns']
-
+	
 	for run in runs:
 		agents_list.append(client.list_assessment_run_agents(assessmentRunArn=run))
-
+	
+	# Get the instance IDs of the instances in the assessment runs
 	for agent in agents_list:
 		x = agent['assessmentRunAgents']
 		for a in x:
